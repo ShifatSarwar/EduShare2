@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     Uri image_uri;
     DatabaseReference databaseReference;
     ImageView profileView;
+    String mName, mEmail;
     TextView profileNameView, profileEmailView;
     StorageReference storageReference;
     String storagePath="Users_Profile_Images/";
@@ -72,27 +73,23 @@ public class MainActivity extends AppCompatActivity {
         databaseReference=firebaseDatabase.getReference();
         storageReference=getInstance().getReference();
 
-        Query query=databaseReference.orderByChild("email").equalTo(firebaseUser.getEmail());
-        query.addValueEventListener(new ValueEventListener() {
+
+        /* databaseReference=firebaseDatabase.getReference("users").child(firebaseUser.getUid()); */
+        databaseReference.child("users").child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds:dataSnapshot.getChildren()) {
-                    String name=""+ds.child("name").getValue();
-                    String email=""+ds.child("email").getValue();
-                    profileNameView.setText(name);
-                    profileEmailView.setText(email);
-                    try {
-
-                    } catch(Exception e) {}
+                 //   Toast.makeText(MainActivity.this, "Help", Toast.LENGTH_SHORT).show();
+                    mName=""+dataSnapshot.child("name").getValue();
+                    mEmail=""+dataSnapshot.child("email").getValue();
                 }
-
-            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
+        profileNameView.setText(mName);
+        profileEmailView.setText(mEmail);
     }
 
     public void logOutAction(View view) {
@@ -109,7 +106,11 @@ public class MainActivity extends AppCompatActivity {
         return;
     }
 
-    public void addClassAction(View view) {}
+    public void addClassAction(View view) {
+        startActivity(new Intent(MainActivity.this, SearchActivity.class));
+        finish();
+        return;
+    }
 
     public void editProfilePicture(View view) {
         String[] options={"Camera", "Gallery"};

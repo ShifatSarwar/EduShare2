@@ -66,32 +66,33 @@
         </RelativeLayout>
     </RelativeLayout>
 
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_height="150dp"/>
-
-    <Button
-        android:id="@+id/addClassButton"
-        android:layout_width="166dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="#CCFFCC"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:onClick="addClassAction"
-        android:text="Add New Class"
-        android:textSize="15dp" />
+<LinearLayout
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_height="match_parent">
 
     <Button
         android:textSize="15dp"
-        android:onClick="createClassAction"
+        android:onClick="addClassAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_gravity="center_vertical|center_horizontal"
         android:background="@drawable/button_background"
-        android:text="Create Classroom"
-        android:id="@+id/createClassButton"/>
+        android:text="Join a class"
+        android:id="@+id/addClassButton"/>
+
+    <TextView
+        android:id="@+id/createClassButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:onClick="createClassAction"
+        android:text="Become a Teacher"
+        android:textSize="15dp" />
 
     <TextView
 
@@ -103,4 +104,5 @@
         android:layout_gravity="center_vertical|center_horizontal"
         android:textStyle="bold"
         android:onClick="logOutAction"  />
+</LinearLayout>
 </LinearLayout>
