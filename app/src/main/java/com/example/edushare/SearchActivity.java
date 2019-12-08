@@ -1,19 +1,17 @@
 package com.example.edushare;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -70,14 +68,28 @@ public class SearchActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 listView.setVisibility(View.VISIBLE);
                 resultAdapter.getFilter().filter(newText);
-
                 return false;
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                goToClass(resultList.get(position));
             }
         });
     }
 
     public void goBackAction(View view) {
         startActivity(new Intent(SearchActivity.this, MainActivity.class));
+        finish();
+        return;
+    }
+
+    public void goToClass(String className) {
+        Intent intent=new Intent(SearchActivity.this, ClassroomActivity.class);
+        intent.putExtra("Class_Name", className);
+        startActivity(intent);
         finish();
         return;
     }

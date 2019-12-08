@@ -33,6 +33,8 @@ public class ClassroomActivity extends AppCompatActivity {
         classschedule=findViewById(R.id.classTimingView);
         firebaseDatabase=FirebaseDatabase.getInstance();
         databaseReference=firebaseDatabase.getReference();
+        Intent intent=getIntent();
+        classname.setText(intent.getStringExtra("Class_Name"));
 
     }
 

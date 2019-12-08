@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
     Uri image_uri;
     DatabaseReference databaseReference;
     ImageView profileView;
-    String mName, mEmail;
     TextView profileNameView, profileEmailView;
     StorageReference storageReference;
     String storagePath="Users_Profile_Images/";
@@ -70,26 +69,28 @@ public class MainActivity extends AppCompatActivity {
         firebaseDatabase=FirebaseDatabase.getInstance();
         cameraPermissions=new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermissions=new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        databaseReference=firebaseDatabase.getReference();
-        storageReference=getInstance().getReference();
-
-
-        /* databaseReference=firebaseDatabase.getReference("users").child(firebaseUser.getUid()); */
-        databaseReference.child("users").child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference=firebaseDatabase.getReference("users");
+     //   storageReference=getInstance().getReference();
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                 //   Toast.makeText(MainActivity.this, "Help", Toast.LENGTH_SHORT).show();
-                    mName=""+dataSnapshot.child("name").getValue();
-                    mEmail=""+dataSnapshot.child("email").getValue();
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String mail = ds.child("email").getValue(String.class);
+                    if(firebaseUser.getEmail().equals(mail)) {
+                        final String mName = ds.child("name").getValue(String.class);
+                        final String mEmail=mail;
+                        profileNameView.setText(mName);
+                        profileEmailView.setText(mEmail);
+                    }
                 }
+
+            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
-        profileNameView.setText(mName);
-        profileEmailView.setText(mEmail);
+
     }
 
     public void logOutAction(View view) {
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         finish();
         return;
     }
+
 
     public void editProfilePicture(View view) {
         String[] options={"Camera", "Gallery"};
@@ -243,4 +245,6 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
+
 }
