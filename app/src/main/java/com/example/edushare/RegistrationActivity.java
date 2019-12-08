@@ -91,6 +91,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                 FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
                                 DatabaseReference databaseReference=firebaseDatabase.getReference("users");
                                 databaseReference.child(uid).setValue(hashMap);
+                                user.sendEmailVerification();
                             }
                         }
                     });
