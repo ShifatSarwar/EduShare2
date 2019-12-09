@@ -99,6 +99,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="5dp"
+        android:onClick="editClassDescription"
         android:textSize="10dp" />
 
     <TextView
@@ -116,18 +117,19 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="5dp"
+        android:onClick="editClassSchedule"
         android:textSize="10dp" />
 
     <Button
         android:textSize="15dp"
-        android:onClick="goToLiveRoomAction"
+        android:onClick="buttonPressAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_gravity="center_vertical|center_horizontal"
         android:background="@drawable/button_background"
         android:text="Join Now"
-        android:id="@+id/viewLiveButton"/>
+        android:id="@+id/multipleActionButton"/>
 
 
     <LinearLayout
@@ -170,6 +172,9 @@
         android:textStyle="bold"
         android:layout_gravity="center_vertical|center_horizontal"
         android:text="Profile"/>
+
+
+
 
 
 </LinearLayout>

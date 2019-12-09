@@ -89,6 +89,7 @@ public class SearchActivity extends AppCompatActivity {
     public void goToClass(String className) {
         Intent intent=new Intent(SearchActivity.this, ClassroomActivity.class);
         intent.putExtra("Class_Name", className);
+        intent.putExtra("User_Type","unofficial");
         startActivity(intent);
         finish();
         return;

@@ -246,5 +246,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void getClassListAction(View view) {
+        startActivity(new Intent(MainActivity.this, ClassListActivity.class));
+        finish();
+        return;
+    }
+
 
 }

@@ -10,7 +10,7 @@
     tools:context=".SearchActivity">
 
     <TextView
-        android:id="@+id/signupButton"
+        android:id="@+id/profileButton"
         android:textSize="15dp"
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"

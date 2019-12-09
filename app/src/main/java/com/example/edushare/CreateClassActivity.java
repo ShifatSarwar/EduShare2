@@ -51,7 +51,6 @@ public class CreateClassActivity extends AppCompatActivity {
             String classID=databaseReference.push().getKey();
             FirebaseUser user=firebaseAuth.getCurrentUser();
             String uid=user.getUid();
-            Toast.makeText(this, "Fill", Toast.LENGTH_SHORT).show();
             HashMap<Object,String> hashMap=new HashMap<>();
             hashMap.put("classname",className);
             hashMap.put("uid",uid);

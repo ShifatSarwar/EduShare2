@@ -13,7 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SearchActivity"></activity>
+        <activity android:name=".JoinProcessActivity" />
+        <activity android:name=".ClassListActivity" />
+        <activity android:name=".SearchActivity" />
         <activity android:name=".ClassResourcesActivity" />
         <activity android:name=".ClassroomActivity" />
         <activity android:name=".LiveClassActivity" />
