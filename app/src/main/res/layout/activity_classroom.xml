@@ -172,9 +172,4 @@
         android:textStyle="bold"
         android:layout_gravity="center_vertical|center_horizontal"
         android:text="Profile"/>
-
-
-
-
-
 </LinearLayout>
