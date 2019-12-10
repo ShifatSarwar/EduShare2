@@ -22,6 +22,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -119,18 +120,36 @@ public class ClassroomActivity extends AppCompatActivity {
             finish();
             return;
         } else if(userType.equals("admin"))  {
+            Intent intent=new Intent(ClassroomActivity.this, GoLiveActivity.class);
+            startActivity(intent);
+            finish();
+            return;
         } else { }
     }
 
     public void viewResourcesAction(View view) {
         if(userType.equals("unofficial")) {
             Toast.makeText(this, "Admit class to view resources", Toast.LENGTH_SHORT).show();
+        } else if (userType.equals("admin")) {
+            Intent intent=new Intent(ClassroomActivity.this,ResourcesActivity.class);
+            intent.putExtra("User_Type",userType);
+            intent.putExtra("Class_Name",className);
+            startActivity(intent);
+            finish();
+            return;
         }
     }
 
     public void viewDiscussionAction(View view) {
         if(userType.equals("unofficial")) {
             Toast.makeText(this, "Admit class to join discussion", Toast.LENGTH_SHORT).show();
+        } else {
+            Intent intent=new Intent(ClassroomActivity.this,DiscussionActivity.class);
+            intent.putExtra("User_Type",userType);
+            intent.putExtra("Class_Name",className);
+            startActivity(intent);
+            finish();
+            return;
         }
     }
 
@@ -148,14 +167,17 @@ public class ClassroomActivity extends AppCompatActivity {
 
     private void updateDesorSchedule(final String userfunction) {
         AlertDialog.Builder builder=new AlertDialog.Builder(this);
-        if(userfunction.equals("des")) {
-            builder.setTitle("Edit Description");
-        } else {
-            builder.setTitle("Edit Schedule");
-        }
+
         LinearLayout linearLayout=new LinearLayout(this);
         final EditText uchanges=new EditText(this);
-        uchanges.setHint("Write here...");
+        if(userfunction.equals("des")) {
+            builder.setTitle("Edit Description");
+            uchanges.setText(classdescription.getText());
+        } else {
+            builder.setTitle("Edit Schedule");
+            uchanges.setText(classschedule.getText());
+        }
+
         uchanges.setMinEms(20);
         linearLayout.addView(uchanges);
         linearLayout.setPadding(10,10,10,10);
@@ -176,28 +198,11 @@ public class ClassroomActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    private void beginEditing(String userchanges, String eType) {
-        if(userchanges=="") {
+    private void beginEditing(final String userchanges, final String eType) {
+        if(userchanges.equals("")) {
             Toast.makeText(this, "Write Something...", Toast.LENGTH_SHORT).show();
         } else {
-            HashMap<String, Object> results = new HashMap<>();
-            if(eType.equals("schedule")) {
-                results.put("classdate", userchanges);
-            } else {
-                results.put("classdes", userchanges);
-            }
-            databaseReference.child(mKey).updateChildren(results).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Toast.makeText(ClassroomActivity.this, "Updated", Toast.LENGTH_SHORT).show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(ClassroomActivity.this, "Try Again", Toast.LENGTH_SHORT).show();
-                }
-            });
+
         }
     }
-
 }

@@ -2,10 +2,13 @@ package com.example.edushare;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class JoinProcessActivity extends AppCompatActivity {
+    private Toolbar toolbar;
     FirebaseUser firebaseUser;
     TextView classnameview;
     FirebaseAuth firebaseAuth;
@@ -34,6 +38,9 @@ public class JoinProcessActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_process);
         classnameview=findViewById(R.id.classNameConfirmView);
+        toolbar=findViewById(R.id.simplePageToolBar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("EduShare");
         classInformation=new ArrayList<>();
         Intent intent=getIntent();
         className=intent.getStringExtra("Class_Name");

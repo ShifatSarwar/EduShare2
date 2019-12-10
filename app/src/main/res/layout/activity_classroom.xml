@@ -120,6 +120,12 @@
         android:onClick="editClassSchedule"
         android:textSize="10dp" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_height="match_parent">
+
     <Button
         android:textSize="15dp"
         android:onClick="buttonPressAction"
@@ -172,4 +178,6 @@
         android:textStyle="bold"
         android:layout_gravity="center_vertical|center_horizontal"
         android:text="Profile"/>
+
+    </LinearLayout>
 </LinearLayout>

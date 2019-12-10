@@ -53,6 +53,7 @@ public class CreateClassActivity extends AppCompatActivity {
             String uid=user.getUid();
             HashMap<Object,String> hashMap=new HashMap<>();
             hashMap.put("classname",className);
+            hashMap.put("classid", classID);
             hashMap.put("uid",uid);
             hashMap.put("classdes",classDescription);
             hashMap.put("classdate",classSchedule);

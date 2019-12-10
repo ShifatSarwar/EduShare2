@@ -73,6 +73,11 @@ public class ChooseLoginOrRegistrationActivity extends AppCompatActivity {
                                 Toast.makeText(ChooseLoginOrRegistrationActivity.this, "Wrong Email or Password", Toast.LENGTH_SHORT).show();
                             } else if(!firebaseAuth.getInstance().getCurrentUser().isEmailVerified()) {
                                 Toast.makeText(ChooseLoginOrRegistrationActivity.this, "Verify Email", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Intent intent = new Intent(ChooseLoginOrRegistrationActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                                return;
                             }
                         }
                     });

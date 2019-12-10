@@ -5,9 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
     android:background="#f5fff4"
     tools:context=".JoinProcessActivity">
+
+    <include
+        android:id="@+id/simplePageToolBar"
+        layout="@layout/app_bar_layout">
+        >
+    </include>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
@@ -60,5 +71,7 @@
         android:onClick="goBackAction"
         android:textSize="15dp"
         android:text="Cancel"/>
+
+    </LinearLayout>
 
 </LinearLayout>

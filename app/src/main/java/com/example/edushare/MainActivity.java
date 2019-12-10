@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -32,6 +33,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     ImageView profileView;
     TextView profileNameView, profileEmailView;
-    StorageReference storageReference;
+    StorageReference userProfileImageReference;
     String storagePath="Users_Profile_Images/";
 
     @Override
@@ -70,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         cameraPermissions=new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermissions=new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         databaseReference=firebaseDatabase.getReference("users");
-     //   storageReference=getInstance().getReference();
+        userProfileImageReference= FirebaseStorage.getInstance().getReference().child("Profile Images");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -139,10 +141,34 @@ public class MainActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    private void pickFromCamera() { }
+    private void pickFromCamera() {
+    }
 
-    private void pickFromGallery() {}
+    private void pickFromGallery() {
+        Intent galleryIntent=new Intent();
+        galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+        galleryIntent.setType("image/*");
+        startActivityForResult(galleryIntent,IMAGE_PICK_CAMERA_CODE);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==IMAGE_PICK_GALLERY_CODE && resultCode==RESULT_OK && data!=null) {
+            Uri image_uri=data.getData();
+            StorageReference filepath=userProfileImageReference.child(firebaseUser.getUid() +".jpg");
+            filepath.putFile(image_uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    if(task.isSuccessful()) {
+                        Toast.makeText(MainActivity.this, "Image Uploaded", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Something is wrong", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+    }
 
     private boolean checkStoragePermission() {
         boolean result= ContextCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)
