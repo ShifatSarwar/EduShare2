@@ -110,10 +110,11 @@ public class ClassroomActivity extends AppCompatActivity {
     public void viewResourcesAction(View view) {
         if(userType.equals("unofficial")) {
             Toast.makeText(this, "Admit class to view resources", Toast.LENGTH_SHORT).show();
-        } else if (userType.equals("admin")) {
+        } else {
             Intent intent=new Intent(ClassroomActivity.this,ResourcesActivity.class);
             intent.putExtra("User_Type",userType);
             intent.putExtra("Class_Name",className);
+            intent.putExtra("Class_ID", classID);
             startActivity(intent);
             finish();
             return;
