@@ -202,16 +202,16 @@ public class ClassroomActivity extends AppCompatActivity {
             startActivity(new Intent(ClassroomActivity.this, MainActivity.class));
             finish();
         }
-        if(item.getItemId()==R.id.viewCoursesOption) {
-            startActivity(new Intent(ClassroomActivity.this, ClassListActivity.class));
-            finish();
-        }
         if(item.getItemId()==R.id.addCourseOption) {
             startActivity(new Intent(ClassroomActivity.this, SearchActivity.class));
             finish();
         }
-        if(item.getItemId()==R.id.settingsOption) {
+        if(item.getItemId()==R.id.createClassOption) {
             startActivity(new Intent(ClassroomActivity.this, CreateClassActivity.class));
+            finish();
+        }
+        if(item.getItemId()==R.id.settingsOption) {
+            startActivity(new Intent(ClassroomActivity.this, SettingsActivity.class));
             finish();
         }
         return true;

@@ -93,7 +93,7 @@ public class CreateClassActivity extends AppCompatActivity {
             startActivity(new Intent(CreateClassActivity.this, ClassListActivity.class));
             finish();
         }
-        if(item.getItemId()==R.id.addCourseOption) {
+        if(item.getItemId()==R.id.addCoursesOption) {
             startActivity(new Intent(CreateClassActivity.this, SearchActivity.class));
             finish();
         }

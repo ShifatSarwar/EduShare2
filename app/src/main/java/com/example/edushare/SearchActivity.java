@@ -86,13 +86,14 @@ public class SearchActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                goToClass(resultList.get(position), resultId.get(position));
-
+                String name=parent.getAdapter().getItem(position).toString();
+                goToClass(name, resultId.get(resultList.indexOf(name)) );
             }
         });
     }
 
     public void goToClass(String className, String classID) {
+        Toast.makeText(this, className+classID, Toast.LENGTH_SHORT).show();
         Intent intent=new Intent(SearchActivity.this, ClassroomActivity.class);
         intent.putExtra("Class_Name", className);
         intent.putExtra("Class_ID", classID);

@@ -80,6 +80,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             if (!task.isSuccessful()) {
                                 Toast.makeText(RegistrationActivity.this, "Try Again", Toast.LENGTH_SHORT).show();
                             } else {
+                                Toast.makeText(RegistrationActivity.this, "Sign in Successfull, verify your email", Toast.LENGTH_SHORT).show();
                                 FirebaseUser user=firebaseAuth.getCurrentUser();
                                 String uid=user.getUid();
                                 HashMap<Object,String> hashMap=new HashMap<>();

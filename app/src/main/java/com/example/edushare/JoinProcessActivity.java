@@ -58,8 +58,10 @@ public class JoinProcessActivity extends AppCompatActivity {
         FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
         databaseReference=firebaseDatabase.getReference("studentlist");
         HashMap<Object, String> hashMap = new HashMap<>();
-        hashMap.put(className, classID);
-        databaseReference.child(firebaseUser.getUid()).setValue(hashMap);
+        hashMap.put("classname", className);
+        hashMap.put("classid", classID);
+        String classlistID = databaseReference.push().getKey();
+        databaseReference.child(firebaseUser.getUid()).child(classlistID).setValue(hashMap);
         Toast.makeText(JoinProcessActivity.this, "You have successfully joined the class", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(JoinProcessActivity.this, MainActivity.class));
         finish();

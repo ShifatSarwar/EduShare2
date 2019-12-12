@@ -35,6 +35,8 @@
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".ChooseLoginOrRegistrationActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
     </application>
 
 </manifest>

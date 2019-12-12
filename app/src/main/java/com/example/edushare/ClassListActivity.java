@@ -60,11 +60,9 @@ public class ClassListActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Set<String> set=new HashSet<>();
                 Set<String> set2=new HashSet<>();
-                String course;
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    course=ds.getKey();
-                    set.add(course);
-                    set2.add(ds.getValue(String.class));
+                    set.add(""+ds.child("classname").getValue());
+                    set2.add(""+ds.child("classid").getValue());
                 }
                 myClassNameList.clear();
                 myClassNameList.addAll(set);
