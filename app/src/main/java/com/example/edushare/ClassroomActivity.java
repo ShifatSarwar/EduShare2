@@ -3,10 +3,13 @@ package com.example.edushare;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,77 +31,63 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 
 public class ClassroomActivity extends AppCompatActivity {
-    TextView classname, teachername, teachermail, classdescription, classschedule;
+    TextView teachername, teachermail, classdescription, classschedule;
     FirebaseDatabase firebaseDatabase;
     FirebaseUser firebaseUser;
     FirebaseAuth firebaseAuth;
+    Toolbar mToolbar;
     DatabaseReference databaseReference;
     Button actionButton;
     String userType;
-    String className;
+    String className, classID;
     String mKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_classroom);
-        classname=findViewById(R.id.classNameView);
         teachername=findViewById(R.id.classTeacherNameView);
         teachermail=findViewById(R.id.classTeacherMailView);
         actionButton=findViewById(R.id.multipleActionButton);
         classdescription=findViewById(R.id.classDescriptionView);
         classschedule=findViewById(R.id.classTimingView);
-        firebaseDatabase=FirebaseDatabase.getInstance();
-        databaseReference=firebaseDatabase.getReference("class");
         Intent intent=getIntent();
         className=intent.getStringExtra("Class_Name");
         userType=intent.getStringExtra("User_Type");
-        classname.setText(className);
-        Toast.makeText(this, userType, Toast.LENGTH_SHORT).show();
-        if(userType.equals("admin")) {
-            actionButton.setText("Go Live Now...");
-        } else if(userType.equals("official")) {
-            actionButton.setText("View Live Session");
-        } else { }
+        classID=intent.getStringExtra("Class_ID");
+        mToolbar = findViewById(R.id.simplePageToolBar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle(className);
 
+
+        Toast.makeText(this, userType, Toast.LENGTH_SHORT).show();
+        if(!userType.equals("unofficial")) {
+            actionButton.setText("Video Lectures");
+        }
+
+        firebaseDatabase=FirebaseDatabase.getInstance();
+        databaseReference=firebaseDatabase.getReference("class").child(classID);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    String cName = ds.child("classname").getValue(String.class);
-                    if(className.equals(cName)) {
-                        mKey=ds.getKey();
-                        final String mDes = ds.child("classdes").getValue(String.class);
-                        final String mSchedule=ds.child("classdate").getValue(String.class);
+                final String mDes = dataSnapshot.child("classdes").getValue(String.class);
+                final String mSchedule=dataSnapshot.child("classdate").getValue(String.class);
+                classdescription.setText(mDes);
+                classschedule.setText(mSchedule);
+                final String teacherID=dataSnapshot.child("uid").getValue(String.class);
+                databaseReference=firebaseDatabase.getReference("users").child(teacherID);
 
-                        classdescription.setText(mDes);
-                        classschedule.setText(mSchedule);
-                        final String teacherID=ds.child("uid").getValue(String.class);
-                        databaseReference=firebaseDatabase.getReference("users");
-
-                        databaseReference.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                for(DataSnapshot ds: dataSnapshot.getChildren()) {
-                                    final String val=ds.child("uid").getValue(String.class);
-                                    if(val.equals(teacherID)) {
-
-                                        final String cTName=ds.child("name").getValue(String.class);
-                                        final String cTMail=ds.child("email").getValue(String.class);
-                                        teachername.setText(cTName);
-                                        teachermail.setText(cTMail);
-                                        break;
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
+                databaseReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        final String cTName=dataSnapshot.child("name").getValue(String.class);
+                        final String cTMail=dataSnapshot.child("email").getValue(String.class);
+                        teachername.setText(cTName);
+                        teachermail.setText(cTMail);
                     }
-                }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) { }
+                });
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -106,21 +95,12 @@ public class ClassroomActivity extends AppCompatActivity {
         });
     }
 
-    public void goBackAction(View view) {
-        startActivity(new Intent(ClassroomActivity.this, MainActivity.class));
-        finish();
-        return;
-    }
 
     public void buttonPressAction(View view) {
         if(userType.equals("unofficial")) {
             Intent intent = new Intent(ClassroomActivity.this, JoinProcessActivity.class);
             intent.putExtra("Class_Name", className);
-            startActivity(intent);
-            finish();
-            return;
-        } else if(userType.equals("admin"))  {
-            Intent intent=new Intent(ClassroomActivity.this, GoLiveActivity.class);
+            intent.putExtra("Class_ID", classID);
             startActivity(intent);
             finish();
             return;
@@ -147,6 +127,7 @@ public class ClassroomActivity extends AppCompatActivity {
             Intent intent=new Intent(ClassroomActivity.this,DiscussionActivity.class);
             intent.putExtra("User_Type",userType);
             intent.putExtra("Class_Name",className);
+            intent.putExtra("Class_ID", classID);
             startActivity(intent);
             finish();
             return;
@@ -204,5 +185,35 @@ public class ClassroomActivity extends AppCompatActivity {
         } else {
 
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.class_list_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        if(item.getItemId()==R.id.homeOption) {
+            startActivity(new Intent(ClassroomActivity.this, MainActivity.class));
+            finish();
+        }
+        if(item.getItemId()==R.id.viewCoursesOption) {
+            startActivity(new Intent(ClassroomActivity.this, ClassListActivity.class));
+            finish();
+        }
+        if(item.getItemId()==R.id.addCourseOption) {
+            startActivity(new Intent(ClassroomActivity.this, SearchActivity.class));
+            finish();
+        }
+        if(item.getItemId()==R.id.settingsOption) {
+            startActivity(new Intent(ClassroomActivity.this, CreateClassActivity.class));
+            finish();
+        }
+        return true;
     }
 }

@@ -4,9 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +16,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -45,6 +49,7 @@ import static com.google.firebase.storage.FirebaseStorage.getInstance;
 public class MainActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
+    private Toolbar toolbar;
     FirebaseDatabase firebaseDatabase;
     public static final int CAMERA_REQUEST_CODE=100;
     public static final int STORAGE_REQUEST_CODE=200;
@@ -54,21 +59,22 @@ public class MainActivity extends AppCompatActivity {
     String storagePermissions[];
     Uri image_uri;
     DatabaseReference databaseReference;
-    ImageView profileView;
-    TextView profileNameView, profileEmailView;
     StorageReference userProfileImageReference;
+    private ProgressDialog loadingBar;
     String storagePath="Users_Profile_Images/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        profileView=findViewById(R.id.profileID);
-        profileNameView=findViewById(R.id.nameView);
-        profileEmailView=findViewById(R.id.emailView);
         firebaseAuth=FirebaseAuth.getInstance();
         firebaseUser=firebaseAuth.getCurrentUser();
         firebaseDatabase=FirebaseDatabase.getInstance();
+        toolbar=findViewById(R.id.simplePageToolBar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("EduShare");
+        loadingBar= new ProgressDialog(this);
+
         cameraPermissions=new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermissions=new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         databaseReference=firebaseDatabase.getReference("users");
@@ -81,8 +87,7 @@ public class MainActivity extends AppCompatActivity {
                     if(firebaseUser.getEmail().equals(mail)) {
                         final String mName = ds.child("name").getValue(String.class);
                         final String mEmail=mail;
-                        profileNameView.setText(mName);
-                        profileEmailView.setText(mEmail);
+                        final String mImage=ds.child("picture").getValue(String.class);
                     }
                 }
 
@@ -92,27 +97,6 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-
-    }
-
-    public void logOutAction(View view) {
-        firebaseAuth.getInstance().signOut();
-        Intent intent=new Intent(MainActivity.this,ChooseLoginOrRegistrationActivity.class);
-        startActivity(intent);
-        finish();
-        return;
-    }
-
-    public void createClassAction(View view) {
-        startActivity(new Intent(MainActivity.this, CreateClassActivity.class));
-        finish();
-        return;
-    }
-
-    public void addClassAction(View view) {
-        startActivity(new Intent(MainActivity.this, SearchActivity.class));
-        finish();
-        return;
     }
 
 
@@ -148,21 +132,41 @@ public class MainActivity extends AppCompatActivity {
         Intent galleryIntent=new Intent();
         galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
         galleryIntent.setType("image/*");
-        startActivityForResult(galleryIntent,IMAGE_PICK_CAMERA_CODE);
+        startActivityForResult(galleryIntent,IMAGE_PICK_GALLERY_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==IMAGE_PICK_GALLERY_CODE && resultCode==RESULT_OK && data!=null) {
+            loadingBar.setTitle("Set Profile Image");
+            loadingBar.setMessage("Please wait while profile image uploads...");
+            loadingBar.setCanceledOnTouchOutside(false);
+            loadingBar.show();
             Uri image_uri=data.getData();
-            StorageReference filepath=userProfileImageReference.child(firebaseUser.getUid() +".jpg");
+            final StorageReference filepath=userProfileImageReference.child(firebaseUser.getUid() +".jpg");
             filepath.putFile(image_uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                     if(task.isSuccessful()) {
                         Toast.makeText(MainActivity.this, "Image Uploaded", Toast.LENGTH_SHORT).show();
+                        final String downloadUri=filepath.getDownloadUrl().toString();
+
+                        databaseReference.child(firebaseUser.getUid()).child("picture").setValue(downloadUri)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful()) {
+                                            loadingBar.dismiss();
+
+                                        } else {
+                                            loadingBar.dismiss();
+                                            Toast.makeText(MainActivity.this, "Error saving Image", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
                     } else {
+                        loadingBar.dismiss();
                         Toast.makeText(MainActivity.this, "Something is wrong", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -272,11 +276,40 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void getClassListAction(View view) {
-        startActivity(new Intent(MainActivity.this, ClassListActivity.class));
-        finish();
-        return;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.option_menu,menu);
+        return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+        if(item.getItemId()==R.id.viewCoursesOption) {
+            startActivity(new Intent(MainActivity.this, ClassListActivity.class));
+            finish();
+        }
+        if(item.getItemId()==R.id.addCourseOption) {
+            startActivity(new Intent(MainActivity.this, SearchActivity.class));
+            finish();
+        }
+        if(item.getItemId()==R.id.createClassOption) {
+            startActivity(new Intent(MainActivity.this, CreateClassActivity.class));
+            finish();
+        }
+        if(item.getItemId()==R.id.settingsOption) {
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            finish();
+        }
+        if(item.getItemId()==R.id.logOutOption) {
+            firebaseAuth.getInstance().signOut();
+            Intent intent=new Intent(MainActivity.this,ChooseLoginOrRegistrationActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
+        return true;
+    }
 }

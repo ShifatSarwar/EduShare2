@@ -88,6 +88,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                 hashMap.put("name",uName);
                                 hashMap.put("gender",uGender);
                                 hashMap.put("picture", "");
+                                hashMap.put("status","");
                                 FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
                                 DatabaseReference databaseReference=firebaseDatabase.getReference("users");
                                 databaseReference.child(uid).setValue(hashMap);

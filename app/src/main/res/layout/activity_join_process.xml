@@ -5,13 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#f5fff4"
+    android:background="#e0eee0"
     tools:context=".JoinProcessActivity">
 
     <include
         android:id="@+id/simplePageToolBar"
         layout="@layout/app_bar_layout">
-        >
     </include>
 
     <LinearLayout
@@ -64,13 +63,6 @@
         android:onClick="freeTrialJoinAction"
         android:textSize="15dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_height="wrap_content"
-        android:onClick="goBackAction"
-        android:textSize="15dp"
-        android:text="Cancel"/>
 
     </LinearLayout>
 

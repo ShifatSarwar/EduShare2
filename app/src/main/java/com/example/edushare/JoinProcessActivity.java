@@ -3,23 +3,19 @@ package com.example.edushare;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +25,7 @@ public class JoinProcessActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
     TextView classnameview;
     FirebaseAuth firebaseAuth;
-    String className;
+    String className,classID;
     ArrayList<Boolean> classInformation;
     DatabaseReference databaseReference;
 
@@ -40,10 +36,13 @@ public class JoinProcessActivity extends AppCompatActivity {
         classnameview=findViewById(R.id.classNameConfirmView);
         toolbar=findViewById(R.id.simplePageToolBar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("EduShare");
+        firebaseAuth=FirebaseAuth.getInstance();
+        firebaseUser=firebaseAuth.getCurrentUser();
+        getSupportActionBar().setTitle("Enroll Now...");
         classInformation=new ArrayList<>();
         Intent intent=getIntent();
         className=intent.getStringExtra("Class_Name");
+        classID=intent.getStringExtra("Class_ID");
         classnameview.setText(className);
     }
 
@@ -52,70 +51,55 @@ public class JoinProcessActivity extends AppCompatActivity {
     }
 
     public void freeTrialJoinAction(View view) {
-        checkUserCourseAddStatus();
+        addUserToClass();
     }
 
-    private void checkUserCourseAddStatus() {
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-        databaseReference = FirebaseDatabase.getInstance().getReference("studentlist");
-
-        String userMail = firebaseUser.getEmail();
-
-        Query query=databaseReference.orderByChild("studentmail").equalTo(userMail);
-
-        ValueEventListener valueEventListener= new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
-                    for(DataSnapshot ds: dataSnapshot.getChildren()) {
-                        Query query2=databaseReference.orderByChild("classname").equalTo(className);
-                        query2.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if(dataSnapshot.exists()) {
-                                    Toast.makeText(JoinProcessActivity.this, "Course Already Added", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(JoinProcessActivity.this, MainActivity.class));
-                                    finish();
-                                    return;
-                                } else {
-                                    firebaseAuth = FirebaseAuth.getInstance();
-                                    firebaseUser = firebaseAuth.getCurrentUser();
-                                    String classlistID = databaseReference.push().getKey();
-                                    databaseReference = FirebaseDatabase.getInstance().getReference("studentlist");
-                                    final String userMail = firebaseUser.getEmail();
-                                    HashMap<Object, String> hashMap = new HashMap<>();
-                                    hashMap.put("classname", className);
-                                    hashMap.put("studentmail", userMail);
-                                    databaseReference.child(classlistID).setValue(hashMap);
-                                    Toast.makeText(JoinProcessActivity.this, "You have successfully joined the class", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(JoinProcessActivity.this, MainActivity.class));
-                                    finish();
-                                    return;
-                                }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-
-                    }
-
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        query.addListenerForSingleValueEvent(valueEventListener);
-    }
-
-    public void goBackAction(View view) {
-        startActivity(new Intent(JoinProcessActivity.this, SearchActivity.class));
+    private void addUserToClass() {
+        FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
+        databaseReference=firebaseDatabase.getReference("studentlist");
+        HashMap<Object, String> hashMap = new HashMap<>();
+        hashMap.put(className, classID);
+        databaseReference.child(firebaseUser.getUid()).setValue(hashMap);
+        Toast.makeText(JoinProcessActivity.this, "You have successfully joined the class", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(JoinProcessActivity.this, MainActivity.class));
         finish();
         return;
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.join_class_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+        if(item.getItemId()==R.id.homeOption) {
+            Intent intent=new Intent(JoinProcessActivity.this,MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        if(item.getItemId()==R.id.viewCoursesOption) {
+            startActivity(new Intent(JoinProcessActivity.this, ClassListActivity.class));
+            finish();
+        }
+        if(item.getItemId()==R.id.addCourseOption) {
+            startActivity(new Intent(JoinProcessActivity.this, SearchActivity.class));
+            finish();
+        }
+        if(item.getItemId()==R.id.createClassOption) {
+            startActivity(new Intent(JoinProcessActivity.this, CreateClassActivity.class));
+            finish();
+        }
+        if(item.getItemId()==R.id.settingsOption) {
+            startActivity(new Intent(JoinProcessActivity.this, SettingsActivity.class));
+            finish();
+        }
+
+        return true;
     }
 
 }

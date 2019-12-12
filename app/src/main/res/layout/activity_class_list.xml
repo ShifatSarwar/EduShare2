@@ -5,34 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="10dp"
-    android:background="#f5fff4"
+    android:background="#e0eee0"
     tools:context=".ClassListActivity">
 
-
-    <TextView
-        android:id="@+id/profileButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="goBackAction"
-        android:text="Go Back"
-        android:textSize="15dp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:layout_marginTop="10dp"
-        android:textSize="20dp"
-        android:text="Class List" />
+    <include
+        android:id="@+id/classlistbar"
+        layout="@layout/app_bar_layout"
+        >
+    </include>
 
     <ListView
         android:id="@+id/classListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp" />
+        android:padding="10dp" />
 
 
 </LinearLayout>
