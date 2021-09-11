@@ -1,4 +1,4 @@
-# EduShare is an Android LMS Application
+# EduShare2 is an Android LMS Application
 
 ### Its features include:
 
